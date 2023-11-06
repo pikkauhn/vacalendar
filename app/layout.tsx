@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import 'primereact/resources/themes/lara-dark-blue/theme.css'
+import '/node_modules/primeflex/primeflex.css'
 import 'primeicons/primeicons.css';
 
 import Providers from './components/Providers';
