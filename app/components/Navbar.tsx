@@ -1,20 +1,21 @@
-'use client'
+
 import { Menubar } from 'primereact/menubar';        
 import React from 'react'
+
 import SigninButton from './SigninButton';
 
 function Navbar() {
-
-    // const items = [
-
-    // ]
-
+    const items = [
+      {
+        label: 'Home',
+        url: '/Landing'
+      }
+    ]
+   
     const end = <SigninButton />
 
   return (
-    <div><Menubar 
-    // model={items} 
-    end={end}/></div>
+    <div><Menubar model={items} end={end} /></div>
   )
 }
 

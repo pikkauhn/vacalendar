@@ -13,13 +13,13 @@ const SigninButton = () => {
             return (
                 <div className="flex">
                     <h3 className='flex-initial flex align-items-center justify-content-center mr-3'>Welcome, {name}</h3>
-                    <Button label="Sign Out" onClick={() => signOut()} text />
+                    <Button label="Sign Out" onClick={() => signOut()} size='large' text />
                 </div>
             )
         }
     }
     return (
-        <Button label="Sign In" onClick={() => signIn()} text />
+        <Button label="Sign In" onClick={() => signIn()} size='large' text />
     )
 }
 
