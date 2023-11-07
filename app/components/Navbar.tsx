@@ -8,7 +8,8 @@ function Navbar() {
     const items = [
       {
         label: 'Home',
-        url: '/Landing'
+        url: '/Landing',
+        visible: false
       }
     ]
    
