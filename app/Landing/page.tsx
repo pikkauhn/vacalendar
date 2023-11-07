@@ -1,7 +1,7 @@
 import React from 'react'
 import Cal from '../components/Cal'
 
-const UserPostPage = () => {
+const LandingPage = () => {
   return (
     <div className=''>
       <Cal />
@@ -9,4 +9,4 @@ const UserPostPage = () => {
   )
 }
 
-export default UserPostPage
+export default LandingPage
