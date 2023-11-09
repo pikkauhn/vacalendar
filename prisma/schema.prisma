@@ -22,6 +22,7 @@ model User {
   id       Int              @id @default(autoincrement())
   email    String           @unique
   password String
+  name     String
   requests TimeOffRequest[]
   balance  TimeOffBalance[]
   isAdmin  Boolean          @default(false)

@@ -11,10 +11,10 @@ export async function GET(request: Request, { params }: { params: { id: number }
             status: 401,
         });
     }
-    const userPosts = await prisma.post.findMany({
-        where: { authorId: +params.id },
+    const userPosts = await prisma.timeOffRequest.findMany({
+        where: { userId: +params.id },
         include: {
-            author: {
+            user: {
                 select: {
                     email: true,
                     name: true
