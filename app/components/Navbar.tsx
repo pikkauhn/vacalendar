@@ -1,10 +1,11 @@
-
 import { Menubar } from 'primereact/menubar';        
 import React from 'react'
 
 import SigninButton from './SigninButton';
 
 function Navbar() {
+  const userName = SigninButton;
+  console.log(userName)
     const items = [
       {
         label: 'Home',

@@ -10,19 +10,42 @@ datasource db {
   url      = "file:vacalendar.db"
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  password String
-  posts Post[]
+// Table: TimeOffTypes
+model TimeOffType {
+  id             Int              @id @default(autoincrement())
+  name           String
+  TimeOffRequest TimeOffRequest[]
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+// Table: Users
+model User {
+  id       Int              @id @default(autoincrement())
+  email    String           @unique
+  password String
+  requests TimeOffRequest[]
+  balance  TimeOffBalance[]
+  isAdmin  Boolean          @default(false)
+}
+
+// Table: TimeOffRequest
+model TimeOffRequest {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id])
+  notes         String
+  isPaid        Boolean
+  startDate     DateTime    @default(now())
+  timeOffTypeId Int
+  timeOffType   TimeOffType @relation(fields: [timeOffTypeId], references: [id])
+  endDate       DateTime
+  reason        String
+  status        String      @default("Pending")
+}
+
+// Table: TimeOffBalance
+model TimeOffBalance {
+  userId  Int   @id @default(autoincrement())
+  user    User  @relation(fields: [userId], references: [id])
+  year    Float
+  balance Float
 }
