@@ -17,7 +17,8 @@ export async function GET(request: Request, { params }: { params: { id: number }
             user: {
                 select: {
                     email: true,
-                    name: true
+                    firstname: true,
+                    lastname: true,
                 }
             }
         }

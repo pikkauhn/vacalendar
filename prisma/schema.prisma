@@ -19,13 +19,15 @@ model TimeOffType {
 
 // Table: Users
 model User {
-  id       Int              @id @default(autoincrement())
-  email    String           @unique
-  password String
-  name     String
-  requests TimeOffRequest[]
-  balance  TimeOffBalance[]
-  isAdmin  Boolean          @default(false)
+  id        Int              @id @default(autoincrement())
+  email     String           @unique
+  password  String
+  firstname String
+  lastname  String
+  requests  TimeOffRequest[]
+  balance   TimeOffBalance[]
+  invite    String
+  isAdmin   Boolean          @default(false)
 }
 
 // Table: TimeOffRequest

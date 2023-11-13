@@ -11,6 +11,11 @@ function Navbar() {
         label: 'Home',
         url: '/Landing',
         visible: false
+      },
+      {
+        label: 'Register',
+        url: '/Register',
+        visible: true
       }
     ]
    
