@@ -5,22 +5,23 @@ import { Button } from 'primereact/button'
 import React from 'react'
 
 const SigninButton = () => {
-    const { data: session } = useSession()
-
+    const { data: session } = useSession()   
     if (session && session.user) {
-        const userName = session.user.name;
+        const userName = session.user.firstname;
         if (userName) {
             const name = userName.charAt(0).toUpperCase() + userName.slice(1);
             return (name &&
                 <div className="flex">
                     <h3 className='flex-initial flex align-items-center justify-content-center mr-3'>Welcome, {name}</h3>
-                    <Button label="Sign Out" onClick={() => signOut({ callbackUrl: '/'})} size='large' text />
+                    <Button label="Sign Out" onClick={() => signOut({callbackUrl: '/'})} size='large' text />
                 </div>
             )
         }
     }
     return (
+        
         <Button label="Sign In" onClick={() => signIn(undefined, { callbackUrl: '/Landing/'})} size='large' text />
+        
     )
 }
 
