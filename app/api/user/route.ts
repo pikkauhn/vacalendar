@@ -19,6 +19,7 @@ export async function POST(request: Request){
             invite: body.invite,
             email: body.email,
             password: await bcrypt.hash(body.password, 10),
+            dept: '',
             isAdmin: false
         },
     });

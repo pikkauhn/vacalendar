@@ -40,6 +40,7 @@ async function Navbar() {
     },
     {
       label: 'Admins',
+      url: '/Landing/Admin',
       visible: admin,
     }
   ]

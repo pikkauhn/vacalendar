@@ -12,10 +12,11 @@ CREATE TABLE "new_User" (
     "password" TEXT NOT NULL,
     "firstname" TEXT NOT NULL,
     "lastname" TEXT NOT NULL,
-    "invite" TEXT NOT NULL,
-    "isAdmin" BOOLEAN NOT NULL DEFAULT false
+    "dept" TEXT NOT NULL,
+    "isAdmin" BOOLEAN NOT NULL DEFAULT false,
+    "invite" TEXT NOT NULL
 );
-INSERT INTO "new_User" ("email", "firstname", "id", "isAdmin", "lastname", "password") SELECT "email", "firstname", "id", "isAdmin", "lastname", "password" FROM "User";
+INSERT INTO "new_User" ("dept", "email", "firstname", "id", "isAdmin", "lastname", "password") SELECT "dept", "email", "firstname", "id", "isAdmin", "lastname", "password" FROM "User";
 DROP TABLE "User";
 ALTER TABLE "new_User" RENAME TO "User";
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");

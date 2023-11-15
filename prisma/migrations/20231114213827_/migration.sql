@@ -11,6 +11,8 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "firstname" TEXT NOT NULL,
     "lastname" TEXT NOT NULL,
+    "invite" TEXT NOT NULL,
+    "dept" TEXT NOT NULL,
     "isAdmin" BOOLEAN NOT NULL DEFAULT false
 );
 
