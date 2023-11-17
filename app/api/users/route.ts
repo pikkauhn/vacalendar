@@ -12,13 +12,16 @@ export async function POST(request: Request) {
     
     if (body.isAdmin) {
         try {
-            const result = await prisma.user.findMany();
+            const result = await prisma.user.findMany({
+                include: {
+                    timebalance: true
+                }
+            });
             let userInfo = <any>[]
             result.map((data, idx) => {
                 const {id, email, isAdmin, password, invite,  ...userWithoutPass} = result[idx];
                 userInfo.push(userWithoutPass);
             })
-            
             return new Response(JSON.stringify(userInfo));
         } catch (error) {
             console.log(error);

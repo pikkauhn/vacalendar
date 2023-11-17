@@ -24,8 +24,8 @@ model User {
     password  String
     firstname String
     lastname  String
-    requests  TimeOffRequest[]
-    balance   TimeOffBalance[]
+    timerequests  TimeOffRequest[]
+    timebalance   TimeOffBalance[]
     dept      String
     isAdmin   Boolean          @default(false)
     invite    String
