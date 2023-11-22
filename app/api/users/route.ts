@@ -14,7 +14,8 @@ export async function POST(request: Request) {
         try {
             const result = await prisma.user.findMany({
                 include: {
-                    timebalance: true
+                    timebalance: true,
+                    timerequests: true
                 }
             });
             let userInfo = <any>[]

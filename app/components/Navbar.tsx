@@ -39,8 +39,8 @@ async function Navbar() {
       visible: !show
     },
     {
-      label: 'Admins',
-      url: '/Landing/Admin',
+      label: 'Administration',
+      url: '/Admin',
       visible: admin,
     }
   ]
