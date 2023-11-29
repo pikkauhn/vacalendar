@@ -6,6 +6,7 @@ import { DataTable, DataTableFilterMeta, DataTableSelectEvent, DataTableUnselect
 import { Column } from 'primereact/column';
 import ListUsers from '@/app/components/ListUsers';
 import { Button } from 'primereact/button';
+import { useRouter } from 'next/navigation';
 
 interface TimeBalance {
   year: number;
@@ -18,6 +19,7 @@ interface TimeRequests {
 }
 
 interface User {
+  id: number;
   firstname: string;
   lastname: string;
   dept: string;
@@ -26,11 +28,15 @@ interface User {
 }
 
 interface NewResult {
+  id: number;
   firstname: string;
   lastname: string;
   dept: string;
   year: number;
   balance: number;
+}
+
+interface StatusResult {
   status: string;
   notes: string;
 }
@@ -40,7 +46,13 @@ interface ColumnDefinition {
   header: string;
 }
 
+interface StatusDefinition {
+  field: keyof StatusResult;
+  header: string;
+}
+
 const EmployeeTable: React.FC = () => {
+  const router = useRouter();
   const defaultFilters: DataTableFilterMeta = {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   };
@@ -54,16 +66,16 @@ const EmployeeTable: React.FC = () => {
   useEffect(() => {
     const getResults = async () => {
       try {
-        const fetchedResults = await ListUsers();
+        const fetchedResults = await ListUsers(0);
         setResult(fetchedResults);
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch users: ', error);
-      }
+      }      
     };
-  
+
     if (result.length === 0) {
-      getResults();
+      getResults();      
     }
   }, [result]);
 
@@ -95,10 +107,11 @@ const EmployeeTable: React.FC = () => {
   const transformData = (results: User[]): NewResult[] => {
     return results.flatMap((result) => {
       let timeRequestData = [];
-  
+
       if (!result.timerequests || result.timerequests.length === 0) {
         const emptyTimeBalance = { year: 0, balance: 0 };
         const emptyResult = {
+          id: result.id,
           firstname: result.firstname,
           lastname: result.lastname,
           dept: result.dept,
@@ -110,8 +123,9 @@ const EmployeeTable: React.FC = () => {
       } else {
         timeRequestData = result.timerequests.map((timeRequest, index) => {
           const timeBalanceDataItem = result.timebalance[index];
-  
+
           return {
+            id: result.id,
             firstname: result.firstname,
             lastname: result.lastname,
             dept: result.dept,
@@ -122,23 +136,12 @@ const EmployeeTable: React.FC = () => {
           };
         });
       }
-  
+
       return timeRequestData;
     });
   };
 
   const transformedResult = transformData(result);
-  console.log(transformedResult)
-
-  // const pendingRequest = (transformedResult: any) => {
-  //   transformedResult.map((data: any) => {
-  //     if (!data.status) {
-
-  //     }
-  //   })
-  // }
-
-  // pendingRequest(transformedResult);
 
   const columns: ColumnDefinition[] = [
     { field: 'firstname', header: 'First Name' },
@@ -146,15 +149,14 @@ const EmployeeTable: React.FC = () => {
     { field: 'dept', header: 'Department' },
     { field: 'year', header: 'Yearly Allowed' },
     { field: 'balance', header: 'Balance' },
-    { field: 'status', header: 'Status' },
   ];
 
-  const onRowSelect = (event: DataTableSelectEvent) => {
-    console.log(`selected ${event.data.firstname}`);
-  };
+  const statuses: StatusDefinition[] = [
+    { field: 'status', header: 'Requests' }
+  ]
 
-  const onRowUnselect = (event: DataTableUnselectEvent) => {
-    console.log(`${event.data.firstname} Unselected`);
+  const onRowSelect = (event: DataTableSelectEvent) => {
+    router.push(`/Requests/${event.data.id}`);
   };
 
   const header = renderHeader();
@@ -162,17 +164,16 @@ const EmployeeTable: React.FC = () => {
   return (
     <DataTable
       value={transformedResult}
-      selectionMode="single"
-      selection={selectedEmployee!}
-      onSelectionChange={(e) => setSelectedEmployee(e.value)}
-      onRowSelect={onRowSelect}
-      onRowUnselect={onRowUnselect}
-      metaKeySelection={false}
       paginator
       rows={10}
       filters={filters}
       filterDisplay="row"
+      selectionMode='single'
+      selection={selectedEmployee!}
+      onSelectionChange={(e: any) => setSelectedEmployee(e.value)}
       loading={loading}
+      onRowSelect={onRowSelect}
+      metaKeySelection={false}
       globalFilterFields={['firstname', 'lastname', 'dept', 'year', 'balance', 'status']}
       header={header}
       emptyMessage="No Employees Found"
@@ -181,6 +182,13 @@ const EmployeeTable: React.FC = () => {
       {columns.map((col) => (
         <Column key={col.field} sortable field={col.field} header={col.header} />
       ))}
+      {statuses.map((col, idx) => {
+        return (
+          <Column key={col.field} sortable field={col.field} header={col.header} />
+        )
+      }
+      )}
+
     </DataTable>
   );
 };

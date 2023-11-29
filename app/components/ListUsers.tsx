@@ -1,24 +1,25 @@
 import SessionInfo from '@/app/components/SessionInfo';
 
-async function ListUsers() {
+async function ListUsers(id: number) {
   const session = await SessionInfo();
-
+  const userid = id;  
   try {
     const response = await fetch(process.env.REACT_APP_API_URL || "http://localhost:3000/api/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
+      body: JSON.stringify({        
+        userId: userid,
         email: session?.email,
         isAdmin: session?.isAdmin
       }),
+      
     });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch data. Status: ${response.status}`);
     }
-
     return response.json();
   } catch (error) {
     console.error('ListUsers error:', error);

@@ -11,7 +11,7 @@ export async function GET(request: Request, { params }: { params: { id: number }
             status: 401,
         });
     }
-    const userPosts = await prisma.timeOffRequest.findMany({
+    const userRequests = await prisma.timeOffRequest.findMany({
         where: { userId: +params.id },
         include: {
             user: {
@@ -24,5 +24,5 @@ export async function GET(request: Request, { params }: { params: { id: number }
         }
     });
 
-    return new Response(JSON.stringify(userPosts));
+    return new Response(JSON.stringify(userRequests));
 }
