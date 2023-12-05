@@ -1,19 +1,13 @@
 -- CreateTable
-CREATE TABLE "TimeOffType" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "name" TEXT NOT NULL
-);
-
--- CreateTable
 CREATE TABLE "User" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "firstname" TEXT NOT NULL,
     "lastname" TEXT NOT NULL,
-    "invite" TEXT NOT NULL,
     "dept" TEXT NOT NULL,
-    "isAdmin" BOOLEAN NOT NULL DEFAULT false
+    "isAdmin" BOOLEAN NOT NULL DEFAULT false,
+    "invite" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -24,11 +18,11 @@ CREATE TABLE "TimeOffRequest" (
     "isPaid" BOOLEAN NOT NULL,
     "startDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "timeOffTypeId" INTEGER NOT NULL,
+    "timeOffType" TEXT NOT NULL,
     "endDate" DATETIME NOT NULL,
     "reason" TEXT NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'Pending',
-    CONSTRAINT "TimeOffRequest_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "TimeOffRequest_timeOffTypeId_fkey" FOREIGN KEY ("timeOffTypeId") REFERENCES "TimeOffType" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "TimeOffRequest_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable

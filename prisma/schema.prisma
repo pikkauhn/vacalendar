@@ -10,13 +10,6 @@ datasource db {
     url      = "file:vacalendar.db"
 }
 
-// Table: TimeOffTypes
-model TimeOffType {
-    id             Int              @id @default(autoincrement())
-    name           String
-    TimeOffRequest TimeOffRequest[]
-}
-
 // Table: Users
 model User {
     id        Int              @id @default(autoincrement())
@@ -40,7 +33,6 @@ model TimeOffRequest {
     isPaid        Boolean
     startDate     DateTime    @default(now())
     timeOffTypeId Int
-    timeOffType   TimeOffType @relation(fields: [timeOffTypeId], references: [id])
     endDate       DateTime
     reason        String
     status        String      @default("Pending")

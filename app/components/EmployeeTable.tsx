@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useEffect, useState } from 'react';
 import { FilterMatchMode } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
@@ -8,12 +8,14 @@ import ListUsers from '@/app/components/ListUsers';
 import { Button } from 'primereact/button';
 import { useRouter } from 'next/navigation';
 
+import transformUserToNewResult from './TransformUser'
+
 interface TimeBalance {
   year: number;
   balance: number;
 }
 
-interface TimeRequests {
+interface TimeRequest {
   status: string;
   notes: string;
 }
@@ -24,7 +26,7 @@ interface User {
   lastname: string;
   dept: string;
   timebalance: TimeBalance[];
-  timerequests: TimeRequests[];
+  timerequests: TimeRequest[];
 }
 
 interface NewResult {
@@ -34,9 +36,6 @@ interface NewResult {
   dept: string;
   year: number;
   balance: number;
-}
-
-interface StatusResult {
   status: string;
   notes: string;
 }
@@ -47,7 +46,7 @@ interface ColumnDefinition {
 }
 
 interface StatusDefinition {
-  field: keyof StatusResult;
+  field: keyof NewResult;
   header: string;
 }
 
@@ -57,25 +56,30 @@ const EmployeeTable: React.FC = () => {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   };
 
-  const [result, setResult] = useState<User[]>([]);
+  const [result, setResult] = useState<NewResult[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<NewResult | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>(defaultFilters);
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
 
   useEffect(() => {
-    const getResults = async () => {
-      try {
+    const transformedResult: NewResult[] = []
+    const getResults = async () => {   
+
+      try {        
         const fetchedResults = await ListUsers(0);
-        setResult(fetchedResults);
+        fetchedResults.map((user: any, idx: number) => {
+          transformedResult.push(transformUserToNewResult(user));
+          })          
+        setResult(transformedResult);
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch users: ', error);
-      }      
+      }
     };
 
     if (result.length === 0) {
-      getResults();      
+      getResults();
     }
   }, [result]);
 
@@ -99,49 +103,10 @@ const EmployeeTable: React.FC = () => {
       <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined onClick={clearFilter} />
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
-        <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
+        <InputText id="employeeSearch" value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
       </span>
     </div>
   );
-
-  const transformData = (results: User[]): NewResult[] => {
-    return results.flatMap((result) => {
-      let timeRequestData = [];
-
-      if (!result.timerequests || result.timerequests.length === 0) {
-        const emptyTimeBalance = { year: 0, balance: 0 };
-        const emptyResult = {
-          id: result.id,
-          firstname: result.firstname,
-          lastname: result.lastname,
-          dept: result.dept,
-          ...emptyTimeBalance,
-          status: "",
-          notes: "",
-        };
-        timeRequestData.push(emptyResult);
-      } else {
-        timeRequestData = result.timerequests.map((timeRequest, index) => {
-          const timeBalanceDataItem = result.timebalance[index];
-
-          return {
-            id: result.id,
-            firstname: result.firstname,
-            lastname: result.lastname,
-            dept: result.dept,
-            year: timeBalanceDataItem.year,
-            balance: timeBalanceDataItem.balance,
-            status: timeRequest.status || "",
-            notes: timeRequest.notes || "",
-          };
-        });
-      }
-
-      return timeRequestData;
-    });
-  };
-
-  const transformedResult = transformData(result);
 
   const columns: ColumnDefinition[] = [
     { field: 'firstname', header: 'First Name' },
@@ -152,8 +117,8 @@ const EmployeeTable: React.FC = () => {
   ];
 
   const statuses: StatusDefinition[] = [
-    { field: 'status', header: 'Requests' }
-  ]
+    { field: 'status', header: 'Requests' },
+  ];
 
   const onRowSelect = (event: DataTableSelectEvent) => {
     router.push(`/Requests/${event.data.id}`);
@@ -163,18 +128,18 @@ const EmployeeTable: React.FC = () => {
 
   return (
     <DataTable
-      value={transformedResult}
+      value={result}
       paginator
       rows={10}
       filters={filters}
       filterDisplay="row"
-      selectionMode='single'
-      selection={selectedEmployee!}
+      selectionMode="single"
+      selection={selectedEmployee ? selectedEmployee : null}
       onSelectionChange={(e: any) => setSelectedEmployee(e.value)}
       loading={loading}
       onRowSelect={onRowSelect}
       metaKeySelection={false}
-      globalFilterFields={['firstname', 'lastname', 'dept', 'year', 'balance', 'status']}
+      globalFilterFields={['firstname', 'lastname', 'dept', 'year', 'balance', 'status', 'notes']}
       header={header}
       emptyMessage="No Employees Found"
       tableStyle={{ minWidth: '50rem' }}
@@ -185,10 +150,8 @@ const EmployeeTable: React.FC = () => {
       {statuses.map((col, idx) => {
         return (
           <Column key={col.field} sortable field={col.field} header={col.header} />
-        )
-      }
-      )}
-
+        );
+      })}
     </DataTable>
   );
 };

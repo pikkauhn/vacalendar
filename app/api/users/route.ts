@@ -51,6 +51,7 @@ export async function POST(request: Request): Promise<Response> {
                     include: {
                         timebalance: true,
                         timerequests: true,
+                        
                     },
                 });
                 if (result) {
@@ -59,8 +60,7 @@ export async function POST(request: Request): Promise<Response> {
                         password: undefined,
                     }
                     return new Response(JSON.stringify(userWithoutPassword));
-                }
-                
+                }                
             } catch (error) {
                 console.error(error);
                 // Narrow down the type of the error object
