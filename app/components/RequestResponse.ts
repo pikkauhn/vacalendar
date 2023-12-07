@@ -20,7 +20,7 @@ async function UpdateRequest(requestInfo: any) {
             if (!response.ok) {
                 throw new Error(`Failed to fetch data. Status: ${response.status}`);
             }
-            return response.status;
+            return response;
         } catch (error) {
             console.error('UpdateRequests error:', error);
         }

@@ -4,15 +4,18 @@ import { Card } from 'primereact/card';
 import { Accordion, AccordionTab, AccordionTabChangeEvent } from 'primereact/accordion';
 import { Button } from 'primereact/button';
 import { User, TimeOffRequest } from '@prisma/client'
+import { InputTextarea } from 'primereact/inputtextarea';
+
+
 
 import ListUsers from '@/app/components/ListUsers';
 import OrderRequests from './OrderRequests';
-import { InputTextarea } from 'primereact/inputtextarea';
 import UpdateRequest from './RequestResponse';
 
 interface RequestProps {
   id: number;
 }
+
 
 const Requests = ({ id }: RequestProps) => {
   const [result, setResult] = useState<User | null>();
@@ -87,7 +90,7 @@ const Requests = ({ id }: RequestProps) => {
   return (
     <div className="flex justify-content-center">
       {!loading ?
-        <Card className="mt-3 w-24rem text-center" title={(requests.length > 0) ? "Time Off Requests" : "User Has No Requests"}>
+        <Card className="mt-3 w-24rem text-center mr-5" title={(requests.length > 0) ? "Time Off Requests" : "User Has No Requests"}>
           <Accordion activeIndex={activeIndex} onTabChange={(e: AccordionTabChangeEvent) => { onTabChange(e) }}>
             {requests.length > 0 &&
               requests.map((data, idx) => (
@@ -136,13 +139,12 @@ const Requests = ({ id }: RequestProps) => {
                           }}
                         />
                       </div>
-
                     </>
                   )}
                 </AccordionTab>
               ))}
           </Accordion>
-        </Card>
+        </Card>        
         : null}
     </div>
   );

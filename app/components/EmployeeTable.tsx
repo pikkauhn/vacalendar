@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { FilterMatchMode } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
 import { DataTable, DataTableFilterMeta, DataTableSelectEvent, DataTableUnselectEvent } from 'primereact/datatable';
@@ -9,6 +9,8 @@ import { Button } from 'primereact/button';
 import { useRouter } from 'next/navigation';
 
 import transformUserToNewResult from './TransformUser'
+import { OverlayPanel } from 'primereact/overlaypanel';
+import NewEmployeeForm from './NewEmployeeForm';
 
 interface TimeBalance {
   year: number;
@@ -56,6 +58,8 @@ const EmployeeTable: React.FC = () => {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   };
 
+  const op = useRef(null!) as React.RefObject<OverlayPanel>;
+
   const [result, setResult] = useState<NewResult[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<NewResult | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>(defaultFilters);
@@ -98,12 +102,26 @@ const EmployeeTable: React.FC = () => {
     setGlobalFilterValue('');
   };
 
+  const addEmployee = (e: any) => {    
+    if (op.current) {
+    op.current.toggle(e)    
+    }
+  }
+
   const renderHeader = () => (
     <div className="flex justify-content-between">
-      <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined onClick={clearFilter} />
+      <span>    
+      <Button type="button" icon="pi pi-plus" label="Add Employee" outlined onClick={(e) => addEmployee(e)} />
+      <OverlayPanel ref={op}>
+        <NewEmployeeForm />
+      </OverlayPanel>
+      </span>      
+      <span>
+      <Button className="mr-2" type="button" icon="pi pi-filter-slash" label="Clear" outlined onClick={clearFilter} />
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText id="employeeSearch" value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
+      </span>
       </span>
     </div>
   );
