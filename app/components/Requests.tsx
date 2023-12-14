@@ -95,7 +95,7 @@ const Requests = ({ id }: RequestProps) => {
             {requests.length > 0 &&
               requests.map((data, idx) => (
                 <AccordionTab className="w-full" key={data.id} header={data.status}>
-                  <h2 className='mt-0'>{data.timeOffType}</h2>
+                  <h2 className='mt-0'>{data.timeOffTypeId}</h2>
                   <div className="flex flex-column text-left w-12">
                     <p className='mb-0 mt-0'>Reason:</p> <InputTextarea id="reason" autoResize value={data.reason} disabled />
                     <p className='flex justify-content-between mb-0'>
