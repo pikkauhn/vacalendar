@@ -4,7 +4,7 @@ async function ListUsers(id: number) {
   const session = await SessionInfo();
   const userid = id;  
   try {
-    const response = await fetch(process.env.REACT_APP_API_URL || "/api/users", {
+    const response = await fetch(process.env.REACT_APP_API_URL || "https://swu-vacalendar.onrender.com/api/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

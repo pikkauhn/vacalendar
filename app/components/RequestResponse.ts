@@ -4,7 +4,7 @@ async function UpdateRequest(requestInfo: any) {
     const session = await SessionInfo();
     if (session?.isAdmin) {
         try {
-            const response = await fetch(process.env.REACT_APP_API_URL || "/api/requests/", {
+            const response = await fetch(process.env.REACT_APP_API_URL || "https://swu-vacalendar.onrender.com/api/requests/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

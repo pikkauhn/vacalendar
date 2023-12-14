@@ -22,7 +22,7 @@ const CredForm = () => {
         }
         else {
             try {
-                const res = await fetch("/api/user", {
+                const res = await fetch("https://swu-vacalendar.onrender.com/api/user", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
