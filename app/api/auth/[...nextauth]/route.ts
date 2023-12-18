@@ -2,7 +2,7 @@ import NextAuth from "next-auth/next";
 import type { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials"
 
-export const authOptions: AuthOptions = {  
+export const authOptions: AuthOptions = {    
     providers:[
         CredentialsProvider({
             name: "Credentials",
@@ -12,7 +12,7 @@ export const authOptions: AuthOptions = {
             },
             async authorize(credentials, req) {
               // Add logic here to look up the user from the credentials supplied
-              const res = await fetch("https://swu-vacalendar.onrender.com/api/login", {
+              const res = await fetch(process.env.NEXTAUTH_URL + "/api/login", {
                 method:"POST",
                 headers:{
                   "Content-Type": "application/json",
