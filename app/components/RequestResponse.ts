@@ -4,7 +4,7 @@ async function UpdateRequest(requestInfo: any) {
     const session = await SessionInfo();
     if (session?.isAdmin) {
         try {
-            const response = await fetch(process.env.NEXTAUTH_URL + "api/requests/", {
+            const response = await fetch(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/requests/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

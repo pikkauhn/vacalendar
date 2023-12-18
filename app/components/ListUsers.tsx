@@ -4,7 +4,8 @@ async function ListUsers(id: number) {
   const session = await SessionInfo();
   const userid = id;  
   try {
-    const response = await fetch(process.env.NEXTAUTH_URL + "/api/users", {
+    console.log()
+    const response = await fetch(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
