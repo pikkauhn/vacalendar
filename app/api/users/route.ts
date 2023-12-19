@@ -22,7 +22,7 @@ export async function POST(request: Request): Promise<Response> {
                 });
                 let userInfo = <any>[];
                 result.map((data, idx) => {
-                    const { isAdmin, password, invite, ...userWithoutPass } = result[idx];
+                    const { isAdmin, password, employeeId, ...userWithoutPass } = result[idx];
                     userInfo.push(userWithoutPass);
                 });
                 return new Response(JSON.stringify(userInfo));
