@@ -46,7 +46,7 @@ export async function POST(request: Request): Promise<Response> {
             try {
                 const result = await prisma.user.findFirst({
                     where: {
-                        id: userid,
+                        employeeId: userid,
                     },
                     include: {
                         timebalance: true,
