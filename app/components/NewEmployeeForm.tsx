@@ -1,10 +1,10 @@
 'use client'
 import React, { useState } from 'react'
 import { InputText } from 'primereact/inputtext'
-import { InputNumber } from 'primereact/inputnumber'
 import { Checkbox } from 'primereact/checkbox'
 import { Button } from 'primereact/button'
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown'
+import { useRouter } from 'next/navigation'
 
 interface FieldChangeEvent {
     target: {
@@ -14,9 +14,11 @@ interface FieldChangeEvent {
 }
 
 const NewEmployeeForm = () => {
+    const router = useRouter();
+
     const [firstName, setFirstName] = useState<string>('');
     const [lastName, setLastName] = useState<string>('');
-    const [department, setDepartment] = useState<string>('');
+    const [department, setDepartment] = useState<{ name: string; code: string }>({ name: '', code: ''});
     const [employeeID, setEmployeeID] = useState<string>('');
     const [yearly, setYearly] = useState<string>('');
     const [balance, setBalance] = useState<string>('');
@@ -57,8 +59,31 @@ const NewEmployeeForm = () => {
         }
     };
 
-    const onSubmit = async () => {
-        console.log(firstName, lastName, employeeID, department[0], yearly, balance)
+    const onSubmit = async () => {   
+        console.log(employeeID, firstName, lastName, department.name, admin, yearly, balance);
+
+        try {
+            const res = await fetch(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/newEmployee", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    employeeId: parseInt(employeeID),
+                    firstname: firstName,
+                    lastname: lastName,
+                    dept: department.name,
+                    isAdmin: admin,
+                    yearly: parseInt(yearly),
+                    balance: parseInt(balance),
+                }),
+            });
+            if (res) {
+                location.reload();
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (

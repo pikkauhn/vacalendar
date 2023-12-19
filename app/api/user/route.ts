@@ -2,10 +2,9 @@ import prisma from "@/app/lib/prisma";
 import * as bcrypt from 'bcrypt'
 
 interface RequestBody {
-    id:number;
-    firstname:string;
-    lastname:string;
-    invite:string;
+    employeeId:number;
+    firstName:string;
+    lastName:string;
     email:string;
     password:string;
 }
@@ -13,16 +12,15 @@ interface RequestBody {
 export async function POST(request: Request){
     const body:RequestBody = await request.json();
 
-    const user = await prisma.user.create({
+    const user = await prisma.user.update({
+        where: {
+            employeeId: body.employeeId,
+            firstname: body.firstName,
+            lastname: body.lastName,
+        },
         data:{
-            id: body.id,
-            firstname: body.firstname,
-            lastname: body.lastname,
-            invite: body.invite,
             email: body.email,
             password: await bcrypt.hash(body.password, 10),
-            dept: '',
-            isAdmin: false
         },
     });
 

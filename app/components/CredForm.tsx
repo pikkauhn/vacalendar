@@ -13,7 +13,7 @@ const CredForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [invite, setInvite] = useState('');
+    const [employeeId, setEmployeeID] = useState('');
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -31,7 +31,7 @@ const CredForm = () => {
                         firstname: firstName,
                         lastname: lastName,
                         email: email,
-                        invite: invite,
+                        employeeId: parseInt(employeeId),
                         password: password,
                     }),
                 });
@@ -48,7 +48,7 @@ const CredForm = () => {
         <form className='flex flex-column' onSubmit={(e) => handleSubmit(e)}>
             <InputText className='flex mb-2' id='name' placeholder='First Name' value={firstName} onChange={(e) => setFirstName(e.target.value)} />
             <InputText className='flex mb-2' id='name' placeholder='Last Name' value={lastName} onChange={(e) => setLastName(e.target.value)} />
-            <InputText className='flex mb-2' id='name' placeholder='Invite Code' value={invite} onChange={(e) => setInvite(e.target.value)} />
+            <InputText className='flex mb-2' id='name' placeholder='Invite Code' value={employeeId} onChange={(e) => setEmployeeID(e.target.value)} />
             <InputText className='flex mb-2' type='email' id='email' placeholder='Email Address' value={email} onChange={(e) => setEmail(e.target.value)} />
             <InputText className='flex mb-2'
                 id='password' type='password' placeholder='Create Password' value={password}
