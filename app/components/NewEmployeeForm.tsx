@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useReducer, useState } from 'react'
 import { InputText } from 'primereact/inputtext'
 import { Checkbox } from 'primereact/checkbox'
 import { Button } from 'primereact/button'
@@ -11,57 +11,77 @@ interface FieldChangeEvent {
         id: string;
         value: string;
     };
-}
+};
+
+interface State {
+    firstName: string;
+    lastName: string;
+    department: { name: string; code: string };
+    employeeID: string;
+    phone: string;
+    vacationYear: string;
+    vacationBal: string;
+    sickYear: string;
+    sickBal: string;
+    admin: boolean;
+};
+
+const initialState: State = {
+    firstName: '',
+    lastName: '',
+    department: { name: '', code: '' },
+    employeeID: '',
+    phone: '',
+    vacationYear: '',
+    vacationBal: '',
+    sickYear: '',
+    sickBal: '',
+    admin: false,
+  };
+
+  const departments = [
+    { name: 'GIS', code: "GIS" },
+    { name: 'Office', code: "Office" },
+    { name: 'Readers', code: "Read" },
+    { name: 'Shop Water', code: "SHW" },
+    { name: 'Assistant Manager', code: "AM" },
+    { name: 'Shop Waste Water', code: "SHWW" },
+    { name: 'Water Treatment Plant', code: "WTP" },
+    { name: 'Waste Water Treatment Plant', code: "WWTP" }
+]
+
+const reducer = (state: State, action: { type: string; payload: any }) => {
+    switch (action.type) {
+      case 'UPDATE_FIELD':
+        return {
+          ...state,
+          [action.payload.field]: action.payload.value,
+        };
+      case 'TOGGLE_ADMIN':
+        return { ...state, admin: !state.admin };
+      default:
+        return state;
+    }
+  };
 
 const NewEmployeeForm = () => {
     const router = useRouter();
-
-    const [firstName, setFirstName] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
-    const [department, setDepartment] = useState<{ name: string; code: string }>({ name: '', code: ''});
-    const [employeeID, setEmployeeID] = useState<string>('');
-    const [yearly, setYearly] = useState<string>('');
-    const [balance, setBalance] = useState<string>('');
-    const [admin, setAdmin] = useState<boolean>(false);
-
-    const departments = [
-        { name: 'GIS', code: "GIS" },
-        { name: 'Office', code: "Office" },
-        { name: 'Readers', code: "Read" },
-        { name: 'Shop Water', code: "SHW" },
-        { name: 'Assistant Manager', code: "AM" },
-        { name: 'Shop Waste Water', code: "SHWW" },
-        { name: 'Water Treatment Plant', code: "WTP" },
-        { name: 'Waste Water Treatment Plant', code: "WWTP" }
-    ]
-
-    type Setter<T> = (value: T) => void;
-
-    const setters: {
-        employeeIDInput: Setter<string>;
-        yearlyInput: Setter<string>;
-        balanceInput: Setter<string>;
-        firstNameInput: Setter<string>;
-        lastNameInput: Setter<string>;
-    } = {
-        employeeIDInput: setEmployeeID,
-        yearlyInput: setYearly,
-        balanceInput: setBalance,
-        firstNameInput: setFirstName,
-        lastNameInput: setLastName,
+    const [employeeData, dispatch] = useReducer(reducer, initialState);
+  
+    const handleFieldChange = (e: FieldChangeEvent) => {
+      dispatch({ type: 'UPDATE_FIELD', payload: { field: e.target.id, value: e.target.value } });
+    };
+  
+    const handleDepartmentChange = (e: DropdownChangeEvent) => {
+      dispatch({ type: 'UPDATE_FIELD', payload: { field: 'department', value: e.value } });
+    };
+  
+    const handleAdminChange = () => {
+      dispatch({ type: 'TOGGLE_ADMIN', payload: !employeeData.admin });
     };
 
-    const onFieldChange = (e: FieldChangeEvent) => {
-        const input = e.target.id as keyof typeof setters;
-        const setter = setters[input];
-        if (setter) {
-            setter(e.target.value);
-        }
-    };
-
-    const onSubmit = async () => {   
-        console.log(employeeID, firstName, lastName, department.name, admin, yearly, balance);
-
+    const onSubmit = async () => {
+        console.log(employeeData.vacationBal)
         try {
             const res = await fetch(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/newEmployee", {
                 method: "POST",
@@ -69,13 +89,16 @@ const NewEmployeeForm = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    employeeId: parseInt(employeeID),
-                    firstname: firstName,
-                    lastname: lastName,
-                    dept: department.name,
-                    isAdmin: admin,
-                    yearly: parseInt(yearly),
-                    balance: parseInt(balance),
+                    employeeId: parseInt(employeeData.employeeID),
+                    firstname: employeeData.firstName,
+                    lastname: employeeData.lastName,
+                    dept: employeeData.department.name,
+                    phone: parseInt(employeeData.phone),
+                    isAdmin: employeeData.admin,
+                    vacationYear: parseFloat(employeeData.vacationYear),
+                    vacationBal: parseFloat(employeeData.vacationBal),
+                    sickYear: parseFloat(employeeData.sickYear),
+                    sickBal: parseFloat(employeeData.sickBal),
                 }),
             });
             if (res) {
@@ -90,24 +113,31 @@ const NewEmployeeForm = () => {
         <>
             <div className='grid'>
                 <div className='col'>
-                    <InputText id="firstNameInput" value={firstName} required placeholder='First Name' onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange(e)} />
-                    <InputText id="lastNameInput" value={lastName} required placeholder='Last Name' onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange(e)} />
+                    <InputText id="firstName" value={employeeData.firstName} required placeholder='First Name' onChange={(e) => handleFieldChange(e)} />
+                    <InputText id="lastName" value={employeeData.lastName} required placeholder='Last Name' onChange={(e) => handleFieldChange(e)} />
                 </div>
             </div>
             <div className="grid">
                 <div className='col'>
-                    <InputText id="employeeIDInput" value={employeeID} required placeholder='Employee ID' onChange={(e) => onFieldChange(e)} />
-                    <Dropdown id="departmentInput" value={department} required placeholder='Select Department' onChange={(e: DropdownChangeEvent) => setDepartment(e.value)} options={departments} optionLabel="code" />
+                    <InputText id="employeeID" value={employeeData.employeeID} required placeholder='Employee ID' onChange={(e) => handleFieldChange(e)} />
+                    <InputText id="phone" value={employeeData.phone} required placeholder='Employee Phone Number' onChange={(e) => handleFieldChange(e)} />
                 </div>
             </div>
             <div className="grid">
                 <div className="col">
-                    <InputText id="yearlyInput" value={yearly} required placeholder='Yearly Allowed' onChange={(e) => onFieldChange(e)} />
-                    <InputText id="balanceInput" value={balance} required placeholder='Current Balance' onChange={(e) => onFieldChange(e)} />
+                    <InputText id="vacationYear" value={employeeData.vacationYear} required placeholder='Vacation Allowed' onChange={(e) => handleFieldChange(e)} />
+                    <InputText id="vacationBal" value={employeeData.vacationBal} required placeholder='Vacation Balance' onChange={(e) => handleFieldChange(e)} />
+                </div>
+            </div>
+            <div className="grid">
+                <div className="col">
+                    <InputText id="sickYear" value={employeeData.sickYear} required placeholder='Sick Allowed' onChange={(e) => handleFieldChange(e)} />
+                    <InputText id="sickBal" value={employeeData.sickBal} required placeholder='Sick Balance' onChange={(e) => handleFieldChange(e)} />
                 </div>
             </div>
             <span>
-                <Checkbox id="adminInput" value='Admin' checked={admin} onClick={(e) => setAdmin(!admin)} />
+                <Dropdown id="department" value={employeeData.department} required placeholder='Select Department' onChange={(e) =>handleDepartmentChange(e)} options={departments} optionLabel="code" />
+                <Checkbox id="admin" value='Admin' checked={employeeData.admin} onClick={handleAdminChange} />
                 <label className="ml-2" >Admin</label>
             </span>
             <Button type='button' label="Submit" outlined icon='pi pi-check' onClick={(e) => { onSubmit() }} />

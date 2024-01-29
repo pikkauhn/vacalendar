@@ -5,13 +5,13 @@ import EmployeeTable from '@/app/components/EmployeeTable'
 
 
 const page = async () => {
- 
+
 
 
   return (
     <>
       <EmployeeTable />
-      </>
+    </>
   )
 }
 

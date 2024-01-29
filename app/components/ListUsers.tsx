@@ -1,8 +1,8 @@
 import SessionInfo from '@/app/components/SessionInfo';
 
-async function ListUsers(id: number) {
+async function ListUsers(employeeId: number) {
   const session = await SessionInfo();
-  const userid = id;  
+  const userid = employeeId;  
   try {
     console.log()
     const response = await fetch(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/users", {
@@ -12,7 +12,6 @@ async function ListUsers(id: number) {
       },
       body: JSON.stringify({        
         userId: userid,
-        email: session?.email,
         isAdmin: session?.isAdmin
       }),
       

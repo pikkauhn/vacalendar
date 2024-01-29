@@ -6,18 +6,16 @@ import { Button } from 'primereact/button';
 import { User, TimeOffRequest } from '@prisma/client'
 import { InputTextarea } from 'primereact/inputtextarea';
 
-
-
 import ListUsers from '@/app/components/ListUsers';
 import OrderRequests from './OrderRequests';
 import UpdateRequest from './RequestResponse';
 
 interface RequestProps {
-  id: number;
+  employeeId: number;
 }
 
 
-const Requests = ({ id }: RequestProps) => {
+const Requests = ({ employeeId }: RequestProps) => {
   const [result, setResult] = useState<User | null>();
   const [loading, setLoading] = useState<boolean>(true);
   const [requests, setRequests] = useState<TimeOffRequest[]>([]);
@@ -28,7 +26,7 @@ const Requests = ({ id }: RequestProps) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedResults: any = await ListUsers(id);
+        const fetchedResults: any = await ListUsers(employeeId);
         if (fetchedResults) {
           setLoading(false);
           setResult(fetchedResults);
@@ -44,7 +42,7 @@ const Requests = ({ id }: RequestProps) => {
       }
     };
 
-    fetchData();
+    fetchData();    
 
     const cancelToken = new AbortController();
     const intervalId = setInterval(() => {
@@ -55,7 +53,7 @@ const Requests = ({ id }: RequestProps) => {
       cancelToken.abort();
       clearInterval(intervalId);
     };
-  }, [id, loading]);
+  }, [employeeId, loading]);
 
   const onTabChange = (e: AccordionTabChangeEvent) => {
     const selectedIndex: number | null = e.index as number | null;
@@ -95,7 +93,7 @@ const Requests = ({ id }: RequestProps) => {
             {requests.length > 0 &&
               requests.map((data, idx) => (
                 <AccordionTab className="w-full" key={data.id} header={data.status}>
-                  <h2 className='mt-0'>{data.timeOffTypeId}</h2>
+                  <h2 className='mt-0'>{data.timeOffType}</h2>
                   <div className="flex flex-column text-left w-12">
                     <p className='mb-0 mt-0'>Reason:</p> <InputTextarea id="reason" autoResize value={data.reason} disabled />
                     <p className='flex justify-content-between mb-0'>

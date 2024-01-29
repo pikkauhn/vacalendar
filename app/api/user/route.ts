@@ -1,5 +1,5 @@
 import prisma from "@/app/lib/prisma";
-import * as bcrypt from 'bcrypt'
+import * as argon2 from 'argon2'
 
 interface RequestBody {
     employeeId:number;
@@ -20,7 +20,7 @@ export async function POST(request: Request){
         },
         data:{
             email: body.email,
-            password: await bcrypt.hash(body.password, 10),
+            password: await argon2.hash(body.password),
         },
     });
 
