@@ -29,8 +29,8 @@ async function Navbar() {
 
   const items = [
     {
-      label: 'Home',
-      url: '/Landing',
+      label: 'Calendar',
+      url: '/Calendar',
       visible: show
     },
     {

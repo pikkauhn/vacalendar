@@ -21,3 +21,22 @@
     display: flex;
     align-items: center;    
 }
+
+/* Big-Calendar */
+.rbc-calendar {
+    height: 85vh;
+}
+
+.rbc-toolbar {
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+}
+
+
+.rbc-off-range-bg {
+    background: rgba(119, 113, 113, 0.5);
+}
+
+.rbc-today {
+    background: rgba(149, 232, 253, 0.733);
+}

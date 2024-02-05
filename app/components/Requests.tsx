@@ -103,7 +103,7 @@ const Requests = ({ employeeId }: RequestProps) => {
                       End:<span>{new Date(data.endDate).toLocaleString()}</span>
                     </p>
                     <p className='flex justify-content-between mt-0 mb-0'>
-                      Hours:<span>test</span>
+                      Hours Requested:<span>{data.hours}</span>
                     </p>
                     {(data.status !== "Pending") ? <><p>Notes:</p> <InputTextarea id="reason" autoResize value={data.notes} disabled /> </>: null}
                   </div>
