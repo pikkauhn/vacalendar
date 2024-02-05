@@ -10,7 +10,6 @@ datasource db {
     url      = "file:vacalendar.db"
 }
 
-
 model User {
     employeeId      Int               @id @unique
     email           String            @default("")
@@ -25,7 +24,6 @@ model User {
     isAdmin         Boolean           @default(false)
 }
 
-
 model TimeOffRequest {
     id          Int      @id @default(autoincrement())
     userId      Int
@@ -35,10 +33,10 @@ model TimeOffRequest {
     startDate   DateTime @default(now())
     timeOffType String
     endDate     DateTime
+    hours       Float    @default(0)
     reason      String
     status      String   @default("Pending")
 }
-
 
 model VacationBalance {
     userId       Int   @id @default(autoincrement())

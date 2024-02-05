@@ -1,24 +1,26 @@
 'use client'
-import React, { useState } from 'react'
-import { InputText } from 'primereact/inputtext'
-import { Button } from 'primereact/button'
-import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown'
-import { Checkbox } from 'primereact/checkbox'
-
-interface FieldChangeEvent {
-    target: {
-        id: string;
-        value: string;
-    };
-}
+import React, { useEffect, useState } from 'react';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
+import { Checkbox } from 'primereact/checkbox';
+import { Calendar } from 'primereact/calendar';
+import { Nullable } from 'primereact/ts-helpers';
+import { useSession } from 'next-auth/react';
+import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
 
 const NewRequestForm = () => {
-    const [requestType, setRequestType] = useState<{ name: string; code: string }>({ name: '', code: ''});
+    const { data: session } = useSession();
+    const userId = session?.user.employeeId;
+    const admin = session?.user.isAdmin;
+    const [requestType, setRequestType] = useState<{ name: string; code: string }>({ name: '', code: '' });
     const [reason, setReason] = useState<string>('');
-    const [startDate, setStartDate] = useState<string>('');
-    const [endDate, setEndDate] = useState<string>('');
-    const [employeeId, setEmployeeId] = useState<string>('');
+    const [startDate, setStartDate] = useState<Nullable<Date>>(null);
+    const [endDate, setEndDate] = useState<Nullable<Date>>(null);
+    const [employeeId, setEmployeeId] = useState<Nullable<number>>(null);
     const [isPaid, setIsPaid] = useState<boolean>(false);
+    const [minDate, setMinDate] = useState<Date>();
+    const [hours, setHours] = useState<Nullable<number>>(null);
 
     const types = [
         { name: 'Vacation', code: 0 },
@@ -26,29 +28,21 @@ const NewRequestForm = () => {
         { name: 'None', code: 2 }
     ]
 
-    type Setter<T> = (value: T) => void;
-
-    const setters: {
-        reasonInput: Setter<string>,
-        employeeIdInput: Setter<string>,
-        startDateInput: Setter<string>,
-        endDateInput: Setter<string>,
-    } = {
-        reasonInput: setReason,
-        employeeIdInput: setEmployeeId,
-        startDateInput: setStartDate,
-        endDateInput: setEndDate,
-    };
-
-    const onFieldChange = (e: FieldChangeEvent) => {
-        const input = e.target.id as keyof typeof setters;
-        const setter = setters[input];
-        if (setter) {
-            setter(e.target.value);
+    useEffect(() => {
+        if (startDate) {
+            let date = new Date();
+            date.setDate(startDate.getDate());
+            setMinDate(date);
         }
-    };
+    }, [startDate]);
 
-    const onSubmit = async () => {   
+    useEffect(() => {
+        if (!admin) {
+            setEmployeeId(userId);
+        }
+    }, [admin, userId]);
+
+    const onSubmit = async () => {
         try {
             const res = await fetch(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/newRequest", {
                 method: "POST",
@@ -56,12 +50,14 @@ const NewRequestForm = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    userId: employeeId,
-                    reason: reason,
-                    startDate: startDate,
-                    endDate: endDate,
-                    timeOffType: requestType,
-                    isPaid: isPaid
+                    userId,
+                    employeeId,
+                    reason,
+                    startDate,
+                    endDate,
+                    timeOffType: requestType.name,
+                    hours,
+                    isPaid
                 }),
             });
             if (res) {
@@ -73,28 +69,23 @@ const NewRequestForm = () => {
     }
 
     return (
-        <>
-            <div className='grid'>
+        <div>
+            <div className='grid flex-wrap p-fluid'>
                 <div className='col'>
-                    <InputText id="reasonInput" value={reason} required placeholder='Reason for Request' onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange(e)} />
-                    <InputText id="employeeIdInput" value={employeeId} required placeholder='Employee ID' onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange(e)} />
+                    <InputText id="reasonInput" value={reason} required placeholder='Reason for Request' onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setReason(e.target.value) }} />
+                    <Calendar id="startDateInput" className='mt-1' value={startDate} required placeholder='Start Date' showTime hourFormat="12" onChange={(e) => setStartDate(e.value)} />
+                    <Dropdown id="requestTypeInput" className='mt-1' value={requestType} required placeholder='Request Type' onChange={(e: DropdownChangeEvent) => setRequestType(e.value)} options={types} optionLabel="name" />
+                    <Checkbox id="isPaidInput" className='mt-2' value='isPaid' checked={isPaid} onClick={(e) => setIsPaid(!isPaid)} />
+                    <label className="ml-2" >Request Paid Leave</label>
                 </div>
-            </div>
-            <div className="grid">
                 <div className='col'>
-                <InputText id="startDateInput" value={startDate} required placeholder='Start Date' onChange={(e) => onFieldChange(e)} />
-                    <InputText id="endDateInput" value={endDate} required placeholder='End Date' onChange={(e) => onFieldChange(e)} />                   
+                    <InputNumber id="employeeIdInput" value={employeeId} disabled={!admin} required placeholder='Employee ID' onValueChange={(e: InputNumberValueChangeEvent) => setEmployeeId(e.value)} />
+                    <Calendar id="endDateInput" className='mt-1' value={endDate} required placeholder='End Date' showTime hourFormat="12" minDate={minDate} onChange={(e) => setEndDate(e.value)} />
+                    <InputNumber id='hoursInput' className='mt-1' value={hours} required placeholder='Hours Requested' maxFractionDigits={2} onValueChange={(e: InputNumberValueChangeEvent) => setHours(e.value)} />
                 </div>
+                <Button type='button' className='mt-2' label="Submit" outlined icon='pi pi-check' onClick={(e) => { onSubmit() }} />
             </div>
-            <div className="grid">
-                <div className="col">
-                <Dropdown id="requestTypeInput" value={requestType} required placeholder='Request Type' onChange={(e: DropdownChangeEvent) => setRequestType(e.value)} options={types} optionLabel="name" />
-                <Checkbox id="isPaidInput" value='isPaid' checked={isPaid} onClick={(e) => setIsPaid(!isPaid)} />
-                </div>
-            </div>
-            <Button type='button' label="Submit" outlined icon='pi pi-check' onClick={(e) => { onSubmit() }} />
-
-        </>
+        </div>
     )
 }
 

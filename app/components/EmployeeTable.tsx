@@ -127,11 +127,11 @@ const EmployeeTable: React.FC = () => {
     <div className="flex justify-content-between">
       <span>
         <Button type="button" icon="pi pi-plus" label="Add Employee" outlined onClick={(e) => addEmployee(e)} />
-        <OverlayPanel ref={employee}>
+        <OverlayPanel className='w-4' dismissable={false} closeOnEscape showCloseIcon ref={employee}>
           <NewEmployeeForm />
         </OverlayPanel>
         <Button className='ml-2' type="button" icon="pi pi-plus" label="New Request" outlined onClick={(e) => addRequest(e)} />
-        <OverlayPanel ref={request}>
+        <OverlayPanel className='w-4' dismissable={false} closeOnEscape showCloseIcon ref={request}>
           <NewRequestForm />
         </OverlayPanel>
       </span>

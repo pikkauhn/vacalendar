@@ -13,10 +13,10 @@ interface RequestBody {
 
 export async function POST(request: Request){
     const body:RequestBody = await request.json();
-
+    console.log(body)
     const user = await prisma.timeOffRequest.create({
         data:{
-            userId: body.employeeId,
+            userId: parseInt(body.employeeId.toString()),
             reason: body.reason,
             startDate: body.startDate,
             endDate: body.endDate,
@@ -25,20 +25,17 @@ export async function POST(request: Request){
             isPaid: body.isPaid,
         },
     });
-    const timeOff = await prisma.timeOffBalance.update({
-        where: {
-            userId: body.employeeId
-        },
-        data:{
-            year: body.yearly,
-            balance: body.balance,
-        },
-    })
+    // const timeOff = await prisma.vacationBalance.update({
+    //     where: {
+    //         userId: parseInt(body.employeeId.toString())
+    //     },
+    //     data:{
+    //         vacationYear: body.yearly,
+    //         vacationBal: body.balance,
+    //     },
+    // })
 
     const {...result} = user;    
-    const setTime = timeOff;
-    console.log(result);
-    console.log(setTime);
 
     return new Response(JSON.stringify(result));
 }
