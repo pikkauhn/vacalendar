@@ -9,19 +9,38 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import ListUsers from '@/app/components/ListUsers';
 import OrderRequests from './OrderRequests';
 import UpdateRequest from './RequestResponse';
+import { useRouter } from 'next/navigation';
 
 interface RequestProps {
   employeeId: number;
 }
 
-
 const Requests = ({ employeeId }: RequestProps) => {
-  const [result, setResult] = useState<User | null>();
+  const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
+  const [paramId, setParamId] = useState<boolean>(false);
   const [requests, setRequests] = useState<TimeOffRequest[]>([]);
   const [requestId, setRequestId] = useState<number | null>();
   const [noteValue, setNoteValue] = useState<string>('');
-  const [activeIndex, setActiveIndex] = useState<number | null>()  
+  const [activeIndex, setActiveIndex] = useState<number | null>()
+
+  useEffect(() => {
+    if (!activeIndex && !paramId) {
+      const url = new URL(window.location.href);
+      const searchParams = new URLSearchParams(url.search);
+      const id = searchParams.get('id');
+      if (id) {
+        setRequestId(parseInt(id));
+        const indexWithMatchingId = requests.findIndex((request) => request.id === parseInt(id));
+        if (indexWithMatchingId !== -1) {
+          setActiveIndex(indexWithMatchingId);
+          setParamId(true);
+        } else {
+          setActiveIndex(null);
+        }
+      }
+    }
+  }, [activeIndex, paramId, requests])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,7 +48,6 @@ const Requests = ({ employeeId }: RequestProps) => {
         const fetchedResults: any = await ListUsers(employeeId);
         if (fetchedResults) {
           setLoading(false);
-          setResult(fetchedResults);
           const orderedRequests = OrderRequests(fetchedResults);
           if (orderedRequests) {
             setRequests(orderedRequests);
@@ -42,7 +60,7 @@ const Requests = ({ employeeId }: RequestProps) => {
       }
     };
 
-    fetchData();    
+    fetchData();
 
     const cancelToken = new AbortController();
     const intervalId = setInterval(() => {
@@ -65,7 +83,6 @@ const Requests = ({ employeeId }: RequestProps) => {
       setRequestId(null)
     }
     setActiveIndex(selectedIndex)
-
   }
 
   const onDecision = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -75,15 +92,20 @@ const Requests = ({ employeeId }: RequestProps) => {
       status,
       notes: noteValue,
     };
-  
+
     try {
       await UpdateRequest(requestInfo);
       setLoading(true);
       setActiveIndex(null);
+      if (paramId) {
+        router.replace('/Calendar');
+      }
     } catch (error) {
       console.error('Error trying to update Request:', error);
     }
   };
+
+  // INCLUDE WAY TO CANCEL A REQUEST
 
   return (
     <div className="flex justify-content-center">
@@ -105,7 +127,7 @@ const Requests = ({ employeeId }: RequestProps) => {
                     <p className='flex justify-content-between mt-0 mb-0'>
                       Hours Requested:<span>{data.hours}</span>
                     </p>
-                    {(data.status !== "Pending") ? <><p>Notes:</p> <InputTextarea id="reason" autoResize value={data.notes} disabled /> </>: null}
+                    {(data.status !== "Pending") ? <><p>Notes:</p> <InputTextarea id="notes" autoResize value={data.notes} disabled /> </> : null}
                   </div>
                   {(data.status === "Pending") && (
                     <>
@@ -145,7 +167,7 @@ const Requests = ({ employeeId }: RequestProps) => {
                 </AccordionTab>
               ))}
           </Accordion>
-        </Card>        
+        </Card>
         : null}
     </div>
   );

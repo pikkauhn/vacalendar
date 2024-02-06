@@ -20,7 +20,7 @@ const SigninButton = () => {
     }
     return (
         
-        <Button label="Sign In" onClick={() => signIn(undefined, { callbackUrl: '/Landing/'})} size='large' text />
+        <Button label="Sign In" onClick={() => signIn(undefined, { callbackUrl: '/Calendar'})} size='large' text />
         
     )
 }

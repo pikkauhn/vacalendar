@@ -9,6 +9,7 @@ interface RequestBody {
     isPaid: boolean;
     yearly: number;
     balance: number;
+    hours: number;
 }
 
 export async function POST(request: Request){
@@ -16,24 +17,16 @@ export async function POST(request: Request){
     console.log(body)
     const user = await prisma.timeOffRequest.create({
         data:{
-            userId: parseInt(body.employeeId.toString()),
+            userId: body.employeeId,
             reason: body.reason,
             startDate: body.startDate,
             endDate: body.endDate,
             timeOffType: body.timeOffType,
             notes: '',
+            hours: body.hours,
             isPaid: body.isPaid,
         },
     });
-    // const timeOff = await prisma.vacationBalance.update({
-    //     where: {
-    //         userId: parseInt(body.employeeId.toString())
-    //     },
-    //     data:{
-    //         vacationYear: body.yearly,
-    //         vacationBal: body.balance,
-    //     },
-    // })
 
     const {...result} = user;    
 

@@ -29,7 +29,7 @@ interface TimeRequest {
 }
 
 interface User {
-  id: number;
+  employeeId: number;
   firstname: string;
   lastname: string;
   dept: string;
@@ -39,7 +39,7 @@ interface User {
 }
 
 interface NewResult {
-  id: number;
+  employeeId: number;
   firstname: string;
   lastname: string;
   dept: string;
@@ -128,11 +128,11 @@ const EmployeeTable: React.FC = () => {
       <span>
         <Button type="button" icon="pi pi-plus" label="Add Employee" outlined onClick={(e) => addEmployee(e)} />
         <OverlayPanel className='w-4' dismissable={false} closeOnEscape showCloseIcon ref={employee}>
-          <NewEmployeeForm />
+          <NewEmployeeForm  />
         </OverlayPanel>
         <Button className='ml-2' type="button" icon="pi pi-plus" label="New Request" outlined onClick={(e) => addRequest(e)} />
         <OverlayPanel className='w-4' dismissable={false} closeOnEscape showCloseIcon ref={request}>
-          <NewRequestForm />
+          <NewRequestForm users={result} />
         </OverlayPanel>
       </span>
       <span>
@@ -160,7 +160,7 @@ const EmployeeTable: React.FC = () => {
   ];
 
   const onRowSelect = (event: DataTableSelectEvent) => {
-    router.push(`/Requests/${event.data.id}`);
+    router.push(`/Requests/${event.data.employeeId}`);
   };
 
   const header = renderHeader();

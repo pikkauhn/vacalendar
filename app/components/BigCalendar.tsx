@@ -1,27 +1,41 @@
 'use client'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Calendar, Views, momentLocalizer } from "react-big-calendar";
+import { useRouter } from "next/navigation";
+const localizer = momentLocalizer(moment);
 import moment from "moment";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./style.css"
 
 import SessionInfo from "./SessionInfo";
-
-const localizer = momentLocalizer(moment);
-
-interface View {
-    title: string
-    navigate: Date
-}
+import arHolidays from "../components/Holidays";
 
 interface Event {
+    id: number | null,
+    employeeId: number | null,
     title: string,
     start: Date,
     end: Date,
-    allDay?: boolean,
-    resource?: any,
-    status: string
+    allDay?: boolean | null,
+    status: string | null
+}
+
+interface Holiday {
+    start: Date,
+    end: Date,
+    name: string,
+}
+
+const customComponents = {
+    eventWrapper: (eventWrapperProps: any) => {
+        const style = {
+            background:
+                eventWrapperProps.event.status === 'Pending' ? 'orange' : '',
+            padding: '5px',
+        }
+        return <div style={style}>{eventWrapperProps.children}</div>
+    }
 }
 
 function transformToEvents(data: any[]): Event[] {
@@ -29,11 +43,12 @@ function transformToEvents(data: any[]): Event[] {
     for (const item of data) {
         try {
             const event: Event = {
+                id: item.id,
+                employeeId: item.user.employeeId,
                 title: item.user.firstname + ' ' + item.user.lastname,
                 start: new Date(item.startDate),
                 end: new Date(item.endDate),
                 allDay: false,
-                resource: item,
                 status: item.status
             };
             events.push(event);
@@ -45,39 +60,59 @@ function transformToEvents(data: any[]): Event[] {
 }
 
 function BigCalendar() {
+    const router = useRouter();
     const [events, setEvents] = useState<Event[] | undefined>();
-    useEffect(() => {
-        async function getRequests() {
-            const session = await SessionInfo();
-            if (session?.isAdmin) {
-                const dept = session?.dept;
+    const [loaded, setLoaded] = useState<boolean>(false);
+    const [date, setDate] = useState<Date>(new Date());
 
-                if (session) {
-                    try {
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                // Fetch holidays
+                const holiday = await arHolidays();
+
+                // Fetch requests (if user is admin)
+                const session = await SessionInfo();
+                if (session?.isAdmin) {
+                    const dept = session?.dept;
+                    if (session) {
                         const res = await fetch(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/getRequestsByDept", {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
                             },
                             body: JSON.stringify({
-                                dept: dept
+                                dept: dept,
                             }),
                         });
                         const response = await res.json();
                         const transformed = await transformToEvents(response);
-                        console.log(transformed)
-                        setEvents(transformed);
-                    } catch (error) {
-                        console.log(error);
+
+                        // Combine events and holidays (if both exist)                
+                        const modifiedHolidays = await holiday.map((holiday: Holiday) => ({
+                            title: holiday.name,
+                            start: new Date(holiday.start),
+                            end: new Date(holiday.end),
+                            id: null,
+                            employeeId: null,
+                            status: null,
+                        }));
+
+                        const combined = [...transformed, ...modifiedHolidays];
+                        await setEvents(await combined);
+                        setLoaded(true);
                     }
                 }
+            } catch (error) {
+                console.error("Error fetching data:", error);
             }
         }
-        getRequests();
-    }, [])
 
+        if (!loaded) {
+            fetchData();
+        }
+    }, [loaded]);
 
-    const clickRef = useRef<any>();
     const { defaultDate, views } = useMemo(
         () => ({
             defaultDate: new Date(),
@@ -86,23 +121,32 @@ function BigCalendar() {
         []
     );
 
-    const onSelectEvent = useCallback((calEvent: any) => {
-        window.clearTimeout(clickRef?.current)
-        clickRef.current = window.setTimeout(() => {
-            console.log(calEvent)
-        }, 250)
-    }, []);
+    const onSelectEvent = (e: Event) => {
+        if (e.id) {
+            router.replace(`/Requests/${e.employeeId}?id=${e.id}`);
+        }
+    };
+
+    const onNavigate = (e: Date) => {
+     setDate(e);
+    }
 
     return (
         <div>
             <Calendar
                 localizer={localizer}
+                components={customComponents}
+                date={date}
                 defaultDate={defaultDate}
                 defaultView="month"
                 views={views}
-                onSelectEvent={onSelectEvent}
+                onSelectEvent={(e) => { onSelectEvent(e) }}
                 events={events}
-            />
+                onNavigate={(e) => onNavigate(e)}
+                popup
+            >
+            </Calendar>
+
         </div>
     )
 }

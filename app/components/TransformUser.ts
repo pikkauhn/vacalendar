@@ -14,7 +14,7 @@ interface TimeRequest {
 }
 
 interface User {
-  id: number;
+  employeeId: number;
   firstname: string;
   lastname: string;
   dept: string;
@@ -24,7 +24,7 @@ interface User {
 }
 
 interface NewResult {
-  id: number;
+  employeeId: number;
   firstname: string;
   lastname: string;
   dept: string;
@@ -37,7 +37,7 @@ interface NewResult {
 }
 
 export default function transformUserToNewResult(user: User): NewResult {
-  const { id, firstname, lastname, dept } = user;
+  const { employeeId, firstname, lastname, dept } = user;
   const { vacationYear = 0, vacationBal = 0 } = user.vacationbalance?.at(-1) || {};
   const { sickYear = 0, sickBal = 0 } = user.sickBalance?.at(-1) || {};
 
@@ -46,7 +46,7 @@ export default function transformUserToNewResult(user: User): NewResult {
   const { status = "", notes = "" } = latestRequest || {};
 
   const newResult: NewResult = {
-    id,
+    employeeId,
     firstname,
     lastname,
     dept,

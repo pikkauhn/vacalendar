@@ -13,7 +13,7 @@ export default function page({ params }: {
 
     return (
         <>
-        <Requests id={requestId} />
+        <Requests employeeId={requestId} />
         </>
     )
 }

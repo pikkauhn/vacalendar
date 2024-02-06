@@ -9,7 +9,7 @@ import { Nullable } from 'primereact/ts-helpers';
 import { useSession } from 'next-auth/react';
 import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
 
-const NewRequestForm = () => {
+const NewRequestForm = (users: any) => {
     const { data: session } = useSession();
     const userId = session?.user.employeeId;
     const admin = session?.user.isAdmin;
@@ -42,7 +42,8 @@ const NewRequestForm = () => {
         }
     }, [admin, userId]);
 
-    const onSubmit = async () => {
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         try {
             const res = await fetch(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/newRequest", {
                 method: "POST",
@@ -69,23 +70,23 @@ const NewRequestForm = () => {
     }
 
     return (
-        <div>
+        <form onSubmit={(e) => {onSubmit(e)}}>
             <div className='grid flex-wrap p-fluid'>
                 <div className='col'>
                     <InputText id="reasonInput" value={reason} required placeholder='Reason for Request' onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setReason(e.target.value) }} />
                     <Calendar id="startDateInput" className='mt-1' value={startDate} required placeholder='Start Date' showTime hourFormat="12" onChange={(e) => setStartDate(e.value)} />
                     <Dropdown id="requestTypeInput" className='mt-1' value={requestType} required placeholder='Request Type' onChange={(e: DropdownChangeEvent) => setRequestType(e.value)} options={types} optionLabel="name" />
-                    <Checkbox id="isPaidInput" className='mt-2' value='isPaid' checked={isPaid} onClick={(e) => setIsPaid(!isPaid)} />
+                    <Checkbox id="isPaidInput" className='mt-2' value='isPaid' checked={isPaid} onClick={(_e) => setIsPaid(!isPaid)} />
                     <label className="ml-2" >Request Paid Leave</label>
                 </div>
                 <div className='col'>
-                    <InputNumber id="employeeIdInput" value={employeeId} disabled={!admin} required placeholder='Employee ID' onValueChange={(e: InputNumberValueChangeEvent) => setEmployeeId(e.value)} />
+                    <InputNumber id="employeeIdInput" value={employeeId} disabled={!admin} required maxLength={5} useGrouping={false} placeholder='Employee ID' onValueChange={(e: InputNumberValueChangeEvent) => setEmployeeId(e.value)} />
                     <Calendar id="endDateInput" className='mt-1' value={endDate} required placeholder='End Date' showTime hourFormat="12" minDate={minDate} onChange={(e) => setEndDate(e.value)} />
-                    <InputNumber id='hoursInput' className='mt-1' value={hours} required placeholder='Hours Requested' maxFractionDigits={2} onValueChange={(e: InputNumberValueChangeEvent) => setHours(e.value)} />
+                    <InputNumber id='hoursInput' className='mt-1' value={hours} required maxLength={5} placeholder='Hours Requested' maxFractionDigits={2} onValueChange={(e: InputNumberValueChangeEvent) => setHours(e.value)} />
                 </div>
-                <Button type='button' className='mt-2' label="Submit" outlined icon='pi pi-check' onClick={(e) => { onSubmit() }} />
+                <Button type='submit' className='mt-2' label="Submit" outlined icon='pi pi-check' />
             </div>
-        </div>
+        </form>
     )
 }
 

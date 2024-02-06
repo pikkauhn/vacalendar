@@ -1,8 +1,7 @@
-
 import React from 'react'
 import { Card } from 'primereact/card';
         
-import CredForm from '../components/CredForm';
+import CredForm from '../../components/CredForm';
 
 const page = () => {
   return (

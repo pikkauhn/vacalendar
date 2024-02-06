@@ -9,7 +9,7 @@ interface RequestBody {
     isAdmin: boolean;
     vacationYear: number;
     vacationBal: number;
-    sickYearly: number;
+    sickYear: number;
     sickBal: number;
 }
 
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         await prisma.sickBalance.create({
             data: {
                 userId: body.employeeId,
-                sickYear: body.sickYearly,
+                sickYear: body.sickYear,
                 sickBal: body.sickBal,
             }
         })

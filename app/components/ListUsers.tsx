@@ -12,7 +12,8 @@ async function ListUsers(employeeId: number) {
       },
       body: JSON.stringify({        
         userId: userid,
-        isAdmin: session?.isAdmin
+        isAdmin: session?.isAdmin,
+        dept: session?.dept
       }),
       
     });

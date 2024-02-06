@@ -10,14 +10,29 @@ export async function POST(request: Request): Promise<Response> {
     try {
         const timeOffRequests = await prisma.timeOffRequest.findMany({
             where: {
+                status: {
+                    in: ['Pending', 'Approved']
+                },
                 user: {
                     dept: dept,
-                }
+                },
             },
-            include: {
-                user: true
+            select: {
+                id: true,
+                startDate: true,
+                endDate: true,
+                status: true,
+                user: {
+                    select: {
+                        employeeId: true,
+                        firstname: true,
+                        lastname: true,
+                        isAdmin: true,
+                    }
+                }
             }
         });
+
         return new Response(JSON.stringify(timeOffRequests));
     } catch (error: any) {
         console.error(error);

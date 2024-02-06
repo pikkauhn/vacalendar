@@ -3,17 +3,21 @@ import prisma from "@/app/lib/prisma";
 interface RequestBody {
     userId: number;
     isAdmin: boolean;
+    dept: string;
 }
 
 // Get Users or Requests for specific user if id not equal to 0;
 export async function POST(request: Request): Promise<Response> {
     const body: RequestBody = await request.json();
-    const userid = body.userId;
+    const userid = parseInt(body.userId.toString());
 
     if (userid === 0) {
         if (body.isAdmin) {
             try {
                 const result = await prisma.user.findMany({
+                    where: {
+                        dept: body.dept,
+                    },
                     include: {
                         vacationbalance: true,
                         timerequests: true,
@@ -22,7 +26,7 @@ export async function POST(request: Request): Promise<Response> {
                 });
                 let userInfo = <any>[];
                 result.map((data, idx) => {
-                    const { isAdmin, password, employeeId, ...userWithoutPass } = result[idx];
+                    const { isAdmin, password, ...userWithoutPass } = result[idx];
                     userInfo.push(userWithoutPass);
                 });
                 return new Response(JSON.stringify(userInfo));

@@ -1,5 +1,5 @@
 import React from 'react'
-import BigCalendar from '../components/BigCalendar'
+import BigCalendar from '../../components/BigCalendar'
 
 const page = () => {
   return (

@@ -80,8 +80,8 @@ const NewEmployeeForm = () => {
         dispatch({ type: 'TOGGLE_ADMIN', payload: !employeeData.admin });
     };
 
-    const onSubmit = async () => {
-        console.log(employeeData.vacationBal)
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         try {
             const res = await fetch(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/newEmployee", {
                 method: "POST",
@@ -110,7 +110,7 @@ const NewEmployeeForm = () => {
     }
 
     return (
-        <div>
+        <form onSubmit={(e) => { onSubmit(e) }}>
             <div className='grid flex-wrap p-fluid'>
                 <div className='col'>
                     <InputText id="firstName" value={employeeData.firstName} required placeholder='First Name' onChange={(e) => handleFieldChange(e)} />
@@ -127,9 +127,9 @@ const NewEmployeeForm = () => {
                     <Checkbox id="admin" className='mt-2' value='Admin' checked={employeeData.admin} onClick={handleAdminChange} />
                     <label>Admin</label>
                 </div>
-                <Button type='button' label="Submit" outlined icon='pi pi-check' onClick={(e) => { onSubmit() }} />
+                <Button type='submit' label="Submit" outlined icon='pi pi-check' />
             </div>
-        </div>
+        </form>
     )
 }
 
