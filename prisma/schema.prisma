@@ -33,7 +33,7 @@ model TimeOffRequest {
     startDate   DateTime @default(now())
     timeOffType String
     endDate     DateTime
-    hours       Float    @default(0)
+    hours       Float
     reason      String
     status      String   @default("Pending")
 }
