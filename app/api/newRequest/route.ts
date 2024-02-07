@@ -2,8 +2,8 @@ import prisma from "@/app/lib/prisma";
 
 interface RequestBody {
     employeeId: number;
-    reason:string;
-    startDate:string;
+    reason: string;
+    startDate: string;
     endDate: string;
     timeOffType: string;
     isPaid: boolean;
@@ -12,10 +12,10 @@ interface RequestBody {
     hours: number;
 }
 
-export async function POST(request: Request){
-    const body:RequestBody = await request.json();
+export async function POST(request: Request) {
+    const body: RequestBody = await request.json();
     const user = await prisma.timeOffRequest.create({
-        data:{
+        data: {
             userId: body.employeeId,
             reason: body.reason,
             startDate: body.startDate,
@@ -25,7 +25,7 @@ export async function POST(request: Request){
             hours: body.hours,
             isPaid: body.isPaid,
         },
-    });    
+    });
 
     return new Response(JSON.stringify(user));
 }
