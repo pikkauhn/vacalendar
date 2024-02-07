@@ -31,7 +31,7 @@ const customComponents = {
     eventWrapper: (eventWrapperProps: any) => {
         const style = {
             background:
-                eventWrapperProps.event.status === 'Pending' ? 'orange' : '',
+                eventWrapperProps.event.status === 'Pending' ? 'yellow' : '',
             padding: '5px',
         }
         return <div style={style}>{eventWrapperProps.children}</div>
@@ -73,8 +73,10 @@ function BigCalendar() {
 
                 // Fetch requests (if user is admin)
                 const session = await SessionInfo();
-                if (session?.isAdmin) {
+                if (session) {
                     const dept = session?.dept;
+                    const isAdmin = session?.isAdmin;
+                    const employeeId = session?.employeeId
                     if (session) {
                         const res = await fetch(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/getRequestsByDept", {
                             method: "POST",
@@ -83,6 +85,8 @@ function BigCalendar() {
                             },
                             body: JSON.stringify({
                                 dept: dept,
+                                isAdmin: isAdmin,
+                                employeeId: employeeId
                             }),
                         });
                         const response = await res.json();
@@ -116,7 +120,7 @@ function BigCalendar() {
     const { defaultDate, views } = useMemo(
         () => ({
             defaultDate: new Date(),
-            views: [Views.MONTH, Views.WEEK],
+            views: [Views.MONTH,],
         }),
         []
     );

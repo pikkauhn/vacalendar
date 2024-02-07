@@ -3,13 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { Card } from 'primereact/card';
 import { Accordion, AccordionTab, AccordionTabChangeEvent } from 'primereact/accordion';
 import { Button } from 'primereact/button';
-import { User, TimeOffRequest } from '@prisma/client'
+import { TimeOffRequest } from '@prisma/client'
 import { InputTextarea } from 'primereact/inputtextarea';
 
 import ListUsers from '@/app/components/ListUsers';
 import OrderRequests from './OrderRequests';
 import UpdateRequest from './RequestResponse';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 interface RequestProps {
   employeeId: number;
@@ -17,6 +18,9 @@ interface RequestProps {
 
 const Requests = ({ employeeId }: RequestProps) => {
   const router = useRouter();
+  const { data: session } = useSession()
+
+  const [isAdmin, setIsAdmin] = useState<boolean | undefined>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [paramId, setParamId] = useState<boolean>(false);
   const [requests, setRequests] = useState<TimeOffRequest[]>([]);
@@ -25,6 +29,7 @@ const Requests = ({ employeeId }: RequestProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>()
 
   useEffect(() => {
+    setIsAdmin(session?.user.isAdmin);
     if (!activeIndex && !paramId) {
       const url = new URL(window.location.href);
       const searchParams = new URLSearchParams(url.search);
@@ -40,7 +45,7 @@ const Requests = ({ employeeId }: RequestProps) => {
         }
       }
     }
-  }, [activeIndex, paramId, requests])
+  }, [activeIndex, paramId, requests, session?.user.isAdmin])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,7 +91,7 @@ const Requests = ({ employeeId }: RequestProps) => {
   }
 
   const onDecision = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    const status = (e.target as HTMLElement).innerText === 'Approve' ? 'Approved' : 'Denied';
+    const status = (e.target as HTMLElement).innerText === 'Approve' ? 'Cancel' ? 'Approved' : 'Denied' : 'Cancelled';
     const requestInfo = {
       id: requestId,
       status,
@@ -114,8 +119,18 @@ const Requests = ({ employeeId }: RequestProps) => {
           <Accordion activeIndex={activeIndex} onTabChange={(e: AccordionTabChangeEvent) => { onTabChange(e) }}>
             {requests.length > 0 &&
               requests.map((data, idx) => (
-                <AccordionTab className="w-full" key={data.id} header={data.status}>
+                <AccordionTab className="w-full" key={idx} header={data.status}>
                   <h2 className='mt-0'>{data.timeOffType}</h2>
+                  {(data.status !== `Cancelled`) ?
+                    <Button
+                      outlined
+                      label="Cancel"
+                      onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                        onDecision(e);
+                      }}
+                    />
+                    : null
+                  }
                   <div className="flex flex-column text-left w-12">
                     <p className='mb-0 mt-0'>Reason:</p> <InputTextarea id="reason" autoResize value={data.reason} disabled />
                     <p className='flex justify-content-between mb-0'>
@@ -127,9 +142,9 @@ const Requests = ({ employeeId }: RequestProps) => {
                     <p className='flex justify-content-between mt-0 mb-0'>
                       Hours Requested:<span>{data.hours}</span>
                     </p>
-                    {(data.status !== "Pending") ? <><p>Notes:</p> <InputTextarea id="notes" autoResize value={data.notes} disabled /> </> : null}
+                    {((data.status === "Denied") && !isAdmin) ? <><p>Notes:</p> <InputTextarea id="notes" autoResize value={data.notes} disabled /> </> : null}
                   </div>
-                  {(data.status === "Pending") && (
+                  {(data.status === "Pending" && isAdmin) && (
                     <>
                       <div className='mb-2 mt-2 text-left'>
                         <span>Manager Notes:</span>
@@ -163,7 +178,7 @@ const Requests = ({ employeeId }: RequestProps) => {
                         />
                       </div>
                     </>
-                  )}
+                  )}                  
                 </AccordionTab>
               ))}
           </Accordion>

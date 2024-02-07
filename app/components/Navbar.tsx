@@ -3,6 +3,7 @@ import React from 'react'
 
 import SigninButton from './SigninButton';
 import SessionInfo from './SessionInfo';
+import NewRequestButton from './NewRequestButton';
 
 const sesh = async () => {
   const session = await SessionInfo()
@@ -42,13 +43,14 @@ async function Navbar() {
       label: 'Administration',
       url: '/Admin',
       visible: admin,
-    }
+    }    
   ]
 
+  const newRequest = <NewRequestButton />
   const end = <SigninButton />
 
   return (
-    <div><Menubar model={items} end={end} /></div>
+    <div><Menubar model={items} start={newRequest} end={end} /></div>
   )
 }
 
