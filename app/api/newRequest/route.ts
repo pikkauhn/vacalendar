@@ -21,13 +21,11 @@ export async function POST(request: Request){
             startDate: body.startDate,
             endDate: body.endDate,
             timeOffType: body.timeOffType,
-            notes: '',
+            notes: 'N/A',
             hours: body.hours,
             isPaid: body.isPaid,
         },
-    });
+    });    
 
-    const {...result} = user;    
-
-    return new Response(JSON.stringify(result));
+    return new Response(JSON.stringify(user));
 }
