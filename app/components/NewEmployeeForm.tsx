@@ -83,7 +83,7 @@ const NewEmployeeForm = () => {
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const res = await fetch(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/newEmployee", {
+            const res = await fetch(process.env.NEXT_NEXTAUTH_URL + "/api/newEmployee", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

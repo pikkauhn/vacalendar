@@ -36,7 +36,7 @@ const CredForm = () => {
         }
         else {
             try {
-                const res = await fetch(process.env.NEXT_PUBLIC_NEXTAUTH_URL + "/api/newUser", {
+                const res = await fetch(process.env.NEXT_NEXTAUTH_URL + "/api/newUser", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

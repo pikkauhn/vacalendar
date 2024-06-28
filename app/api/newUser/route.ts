@@ -14,19 +14,18 @@ interface RequestBody {
 
 export async function POST(request: Request) {
     const body: RequestBody = await request.json();
-    console.log(body)
     try {
         const hash = await argon2.hash(body.password);
         const user = await prisma.$transaction(async (prisma) => {
             const user = await prisma.user.create({
                 data: {
-                    employeeId: body.employeeId,
                     firstname: body.firstname,
-                    email: body.email,
                     lastname: body.lastname,
+                    phone: body.phone.toString(),
+                    email: body.email,
+                    employeeId: body.employeeId,
                     dept: body.dept,
                     isAdmin: false,
-                    phone: body.phone.toString(),
                     password: hash, 
                 },
             });
