@@ -5,7 +5,7 @@ async function ListUsers(employeeId: number) {
   const userid = employeeId;  
   try {
     console.log()
-    const response = await fetch(process.env.NEXT_NEXTAUTH_URL + "/api/users", {
+    const response = await fetch(process.env.NEXT_PUBLIC_URL + "/api/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

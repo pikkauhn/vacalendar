@@ -5,7 +5,7 @@ async function UpdateRequest(requestInfo: any) {
     console.log(requestInfo)
     if (session?.isAdmin) {
         try {
-            const response = await fetch(process.env.NEXT_NEXTAUTH_URL + "/api/requests/", {
+            const response = await fetch(process.env.NEXT_PUBLIC_URL + "/api/requests/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -28,7 +28,7 @@ async function UpdateRequest(requestInfo: any) {
     } 
     if (!session?.isAdmin && (requestInfo.status === 'Cancelled')) {
         try {
-            const response = await fetch(process.env.NEXT_NEXTAUTH_URL + "/api/requests/", {
+            const response = await fetch(process.env.NEXTAUTH_URL + "/api/requests/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

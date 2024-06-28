@@ -78,7 +78,7 @@ function BigCalendar() {
                     const isAdmin = session?.isAdmin;
                     const employeeId = session?.employeeId
                     if (session) {
-                        const res = await fetch(process.env.NEXT_NEXTAUTH_URL + "/api/getRequestsByDept", {
+                        const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/getRequestsByDept", {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",

@@ -45,7 +45,7 @@ const NewRequestForm = (users: any) => {
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const res = await fetch(process.env.NEXT_NEXTAUTH_URL + "/api/newRequest", {
+            const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/newRequest", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
