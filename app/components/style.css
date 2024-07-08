@@ -39,3 +39,11 @@
 .rbc-today {
     background: rgba(149, 232, 253, 0.733);
 }
+
+.p-menuitem-spacer {
+    min-width: 0;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+}

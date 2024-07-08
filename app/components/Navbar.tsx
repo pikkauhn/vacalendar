@@ -1,3 +1,4 @@
+'use server'
 import { Menubar } from 'primereact/menubar';
 import React from 'react'
 
@@ -25,10 +26,14 @@ async function Navbar() {
       if (user.isAdmin) {
         admin = true;
       }
-    }    
+    }
   }
 
-  const items = [
+  const items: any[] = [
+    {
+      label: 'New Request',
+      template: NewRequestButton
+    },
     {
       label: 'Calendar',
       url: '/Calendar',
@@ -43,14 +48,13 @@ async function Navbar() {
       label: 'Administration',
       url: '/Admin',
       visible: admin,
-    }    
+    }
   ]
 
-  const newRequest = <NewRequestButton />
-  const end = <SigninButton />
-
   return (
-    <div><Menubar model={items} start={newRequest} end={end} /></div>
+    <div>
+      <Menubar model={items} end={<SigninButton />} />
+    </div>
   )
 }
 

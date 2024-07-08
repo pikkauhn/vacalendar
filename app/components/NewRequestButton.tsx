@@ -24,7 +24,7 @@ const NewRequestButton = () => {
 
     return (
         <>
-        <Button label="New Request" visible={user}  onClick={(e) => addRequest(e)} text />
+        <Button label="New Request" visible={user}  onClick={(e) => addRequest(e)} text />        
         <OverlayPanel className='w-4' dismissable={false} closeOnEscape showCloseIcon ref={request}>
             <NewRequestForm />
         </OverlayPanel>
